@@ -1,2 +1,12 @@
 
 simple DOMLike Parser for AppJet
+
+usage
+
+
+var dom = new DOM();
+var doc = dom.parseFromString(res.responseText);
+log(doc);//=> DOMLike Object
+// example
+var app = doc.getElementById('app');
+var divs = doc.getElementsByTagName('div');

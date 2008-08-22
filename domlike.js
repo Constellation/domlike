@@ -1,14 +1,25 @@
 /*
  * create DOMLike Object on AppJet
+ * ALREADY DONE
+ *   IDのINDEXの実装 => もともとのDOM同様getElementByIdが一番速いと思う
+ * TODO
+ *   innerHTML相当機能の実装 => これがないと何のためにAppJetでDOM解析するのかわかんない
+ *   getElementsByClassNameとか => これはそんなに入らない気もする
+ *   XPathとか => たぶん衝撃的な難しさ
+ *   その他いろいろ
  */
+
 
 var DOM = function(){
   this.IDINDEX = {};
-  this.LIST = [];
 }
 
 DOM.prototype._addIDIndex = function(id, elem){
   this.IDINDEX[id] = elem;
+}
+
+DOM.prototype.removeIDIndex = function(id){
+  delete this.IDINDEX[id]
 }
 
 DOM.prototype._getById = function(id){
@@ -135,11 +146,10 @@ DOM.TextNode = function(str, context, parser){
 DOM.Functions = {
   getElementsByTagName: function(tagname){
     var ret = [];
+    tagname = tagname.toUpperCase();
     var f = function(e){
-      if(e.tagName == tagname) ret.push(e);
-      if(e.childNodes.length){
-        e.childNodes.forEach(f);
-      }
+      if(e.tagName && e.tagName.toUpperCase() == tagname) ret.push(e);
+      e.childNodes.forEach(f);
     }
     this.childNodes.forEach(f);
     return ret;
@@ -151,7 +161,7 @@ DOM.Functions = {
   },
 
   removeChild: function(elem){
-    var i;
+    var i, ret;
     if(this.childNodes.some(function(e, index){
       if(e==elem){
         i = index;
@@ -159,6 +169,7 @@ DOM.Functions = {
       }
       else return false;
     })){
+      if(elem.id) this._getParser().removeIDIndex(elem.id);
       return this.childNodes.splice(i, 1);
     }
   }
